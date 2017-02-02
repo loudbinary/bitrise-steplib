@@ -1,0 +1,123 @@
+title: Update, or Create JIRA comment with commit_message
+summary: Will post a comment with build results for all items in provided ISSUE_KEY
+  array found withing commit messages (download link, build number, etc)
+description: Will post a comment on the issue page with build details (download link,
+  build number, etc)
+website: https://github.com/loudbinary/bitrise_report_to_jira
+source_code_url: https://github.com/loudbinary/bitrise_report_to_jira.git
+support_url: https://github.com/loudbinary/bitrise_report_to_jira/issues
+published_at: 2017-02-02T00:07:52.701890591-05:00
+source:
+  git: https://github.com/loudbinary/bitrise_report_to_jira.git
+  commit: 0722541220f46cfe1fffab1dcc34ab227a8beea5
+host_os_tags:
+- ubuntu-14.04
+- osx-10.11
+type_tags:
+- jira
+- issue-tracker
+is_requires_admin_user: true
+is_always_run: false
+is_skippable: false
+run_if: .IsCI | and (not .IsPR)
+inputs:
+- git_commit_message: $BITRISE_GIT_MESSAGE
+  opts:
+    description: Commit message will be parsed for issue keys, and provide build status
+      to each.
+    is_expand: true
+    is_required: true
+    summary: The commit message, or details given when this job was started
+    title: Git commit message
+    value_options: []
+- jira_user: null
+  opts:
+    description: JIRA account username that will be the author of the comment
+    is_expand: true
+    is_required: true
+    summary: JIRA account username that will be the author of the comment
+    title: JIRA user
+    value_options: []
+- jira_password: null
+  opts:
+    description: JIRA account password that will be the author of the comment
+    is_expand: true
+    is_required: true
+    summary: JIRA account password that will be the author of the comment
+    title: JIRA user password
+    value_options: []
+- jira_build_message: |
+    *$BITRISE_APP_TITLE* build *$BITRISE_BUILD_NUMBER* is now available: [Download|$BITRISE_PUBLIC_INSTALL_PAGE_URL]\n
+
+    ||Build number|$BITRISE_BUILD_NUMBER|\n
+    ||Author|$GIT_CLONE_COMMIT_AUTHOR_NAME|\n
+    ||Branch|$BITRISE_GIT_BRANCH|\n
+    ||Commit hash|$GIT_CLONE_COMMIT_HASH|\n
+    ||Commit message|$GIT_CLONE_COMMIT_MESSAGE_SUBJECT|\n
+
+    [Show build details|$BITRISE_BUILD_URL]
+  opts:
+    description: The content of the build message that will be posted. You can use
+      markdown. Details [here|https://jira.atlassian.com/secure/WikiRendererHelpAction.jspa?section=all]
+    is_expand: true
+    is_required: true
+    summary: The content of the build message that will be posted
+    title: Build message
+    value_options: []
+- jira_url: null
+  opts:
+    description: 'JIRA instance URL (Ex: http://foobar.atlassian.net/)'
+    is_expand: true
+    is_required: true
+    summary: JIRA instance URL
+    title: JIRA URL
+    value_options: []
+- jira_default_project: null
+  opts:
+    description: When necessary to create a new issue, because none were supplied,
+      then issue will be built here.
+    is_expand: true
+    is_required: true
+    summary: JIRA Default Project for new issues
+    title: JIRA Default Project
+    value_options: []
+- jira_default_issue_type: null
+  opts:
+    description: When necessary to create a new issue, because none were supplied,
+      then issue type will be used.
+    is_expand: true
+    is_required: false
+    summary: JIRA Default Issue type for new issues
+    title: JIRA Default Issue type
+    value_options: []
+- jira_create_missing: "false"
+  opts:
+    description: When necessary to create a new issue, because none were supplied
+      in commit message.
+    is_expand: true
+    is_required: false
+    summary: Creates new issue if one wasn't provided, on default board.
+    title: JIRA Create Issue if Missing
+    value_options:
+    - "true"
+    - "false"
+- opts:
+    description: Define when updates should occurr to JIRA Issues.
+    is_expand: true
+    is_required: true
+    summary: Create issue / comment on Successful, Failed, or Both for Jobs
+    title: When to provide updates to JIRA Issues
+    value_options:
+    - Success
+    - Failure
+    - Both
+    - None
+  when_to_notify: None
+outputs:
+- JIRA_ISSUE_KEY: null
+  opts:
+    description: The key of the issue where the comment has been posted
+    is_expand: true
+    is_required: true
+    summary: The key of the issue where the comment has been posted
+    title: JIRA issue key
